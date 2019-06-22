@@ -143,7 +143,29 @@ export default class ZonkyApi extends Api<ApiResponseType<any>> {
         };
     }
 
-    public async downloadInvestments(): Promise<Buffer> {
+    public async getNumberOfNotifications(): Promise<String> {
+        return getPromiseInterval(async (resolve) => {
+            const response = await this.get('users/me/notifications',{},{ 'X-Size': 1});
+            
+            resolve(response.source.headers.get('x-total'));
+        }, 5000);
+    }
+
+    public async downloadNotifications(size?: number): Promise<Buffer> {
+        return getPromiseInterval(async (resolve) => {
+            if (size === undefined) {
+                const xsize=await this.getNumberOfNotifications();
+                const { data } = await this.get('users/me/notifications',{},{'X-Size': Number(xsize)});
+                resolve(data);
+            } else {
+                const { data } = await this.get('users/me/notifications',{},{...(size?{'X-Size': size}:{'X-Size': size}), });
+                resolve(data);
+    
+            }
+        }, 5000);
+    }
+
+    public async downloadPeople(): Promise<Buffer> {
         await this.post('users/me/investments/export');
 
         return getPromiseInterval(async (resolve) => {
@@ -161,7 +183,7 @@ export default class ZonkyApi extends Api<ApiResponseType<any>> {
             }
         }, 5000);
     }
-    
+
     public async downloadTransactions(): Promise<Buffer> {
         await this.post('users/me/wallet/transactions/export');
 

@@ -48,7 +48,10 @@ const { ZonkyApi } = require('zonky-api-handler');
     
     const investments = await api.downloadInvestments();
     fs.writeFileSync('investments.xlsx', investments);
-    
+
+    const notifications = await api.downloadNotifications();
+    fs.writeFileSync('notifications.json', JSON.stringify(notifications));
+
 })()
 ```
 
@@ -78,6 +81,10 @@ const { ZonkyApi } = require('zonky-api-handler');
     console.log(`Download investments: ${process.argv[5]}`);
     const people = await api.downloadInvestments();
     fs.writeFileSync(process.argv[5], people);
+
+    console.log("Download notifications");
+    const notifications = await api.downloadNotifications();
+    fs.writeFileSync('notifications.json', JSON.stringify(notifications));
 
     console.log("Done");
 })()
